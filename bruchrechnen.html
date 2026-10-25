@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kopfübungen: Rechnen mit Brüchen</title>
+<style>
+:root{--paper:#f7f9fc;--grid:#d9e3f1;--ink:#1d2b4a;--muted:#55658a;--accent:#1f5fd1;--accent-ink:#fff;--card:#fff;--ok:#1b7447;--okbg:#e3f4ea;--bad:#b8322a;--badbg:#fbe6e3;--line:#b9c8e0;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#111a2c;--grid:#1d2a44;--ink:#e6ecf8;--muted:#9aa9c6;--accent:#7aa7ff;--accent-ink:#0d1730;--card:#18233a;--ok:#74d6a0;--okbg:#17372a;--bad:#ff8f84;--badbg:#40201e;--line:#34456a}}
+:root[data-theme="dark"]{--paper:#111a2c;--grid:#1d2a44;--ink:#e6ecf8;--muted:#9aa9c6;--accent:#7aa7ff;--accent-ink:#0d1730;--card:#18233a;--ok:#74d6a0;--okbg:#17372a;--bad:#ff8f84;--badbg:#40201e;--line:#34456a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background-color:var(--paper);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:18px;line-height:1.5}
+main{max-width:600px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.6rem;line-height:1.2;margin:8px 0}
+h2{font-size:1.3rem;margin:0 0 8px}
+.lead{color:var(--muted);margin:0 0 20px;font-size:1rem}
+.cats{display:grid;gap:10px}
+@media(min-width:520px){.cats{grid-template-columns:1fr 1fr}}
+.cat{all:unset;box-sizing:border-box;display:block;cursor:pointer;background:var(--card);border:2px solid var(--line);border-radius:10px;padding:12px 14px}
+.cat:hover{border-color:var(--accent)}
+.cat:focus-visible,button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.cat b{display:block;font-size:1.05rem}
+.cat span{display:block;font-size:.9rem;color:var(--muted)}
+.cat .best{margin-top:4px;color:var(--ink)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+.link{all:unset;cursor:pointer;color:var(--accent);text-decoration:underline;font-size:1rem}
+.bar{height:8px;background:var(--grid);border-radius:4px;overflow:hidden;margin-bottom:16px}
+.bar div{height:100%;background:var(--accent);width:0;transition:width .25s}
+.card{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:20px 16px}
+.catname{color:var(--muted);font-size:.95rem;margin:0 0 6px}
+.q{font-size:2.2rem;line-height:1.5;text-align:center;margin:14px 0 18px;min-height:3.4rem}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.7em;line-height:1.15;margin:0 3px}
+.fr span:first-child{border-bottom:2px solid currentColor;padding:0 4px}
+.ex{background:var(--paper);border:2px solid var(--line);border-radius:8px;padding:10px 14px;margin:12px 0;font-size:1.2rem;line-height:2.2}
+input{width:100%;font:inherit;font-size:1.6rem;text-align:center;padding:10px;border:2px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
+input:disabled{opacity:.8}
+.hlp{display:flex;gap:8px;justify-content:center;margin-top:10px}
+.hlp button{font:inherit;font-size:1.1rem;padding:6px 18px;border:2px solid var(--accent);border-radius:8px;background:transparent;color:var(--accent);cursor:pointer}
+.err{color:var(--bad);font-size:.95rem;min-height:1.4rem;margin:6px 0 0}
+.go{display:block;width:100%;margin-top:10px;font:inherit;font-weight:700;font-size:1.1rem;padding:12px;border:0;border-radius:8px;background:var(--accent);color:var(--accent-ink);cursor:pointer}
+.sec{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+.fb{margin-top:14px;padding:10px 12px;border-radius:8px;font-size:1rem}
+.fb.ok{background:var(--okbg);color:var(--ok)}
+.fb.bad{background:var(--badbg);color:var(--bad)}
+.score{font-size:2.4rem;font-weight:700;margin:4px 0}
+ul{padding-left:20px}
+li{margin:8px 0}
+.two{display:grid;gap:10px;margin-top:16px}
+@media(min-width:520px){.two{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<main>
+<section id="home">
+<p><a class="link" href="index.html">Alle Kopfübungen</a></p>
+<h1>Wiederholung: Rechnen mit Brüchen</h1>
+<p class="lead">Wähle eine Rechenart. Zuerst gibt es eine kurze Erklärung, dann 10 Aufgaben ohne Taschenrechner. Brüche gibst du als 3/4 ein, negative mit Minus davor (−3/4). Gib das Ergebnis immer gekürzt an.</p>
+<div id="cats" class="cats"></div>
+</section>
+
+<section id="learn" hidden>
+<div class="card">
+<h2 id="lt"></h2>
+<div id="lb"></div>
+<button class="go" id="start" type="button">Aufgaben starten</button>
+<button class="go sec" id="lback" type="button">Zurück</button>
+</div>
+</section>
+
+<section id="play" hidden>
+<div class="top"><button class="link" id="back" type="button">Kategorien</button><button class="link" id="expl" type="button">Erklärung</button><span id="prog"></span></div>
+<div class="bar"><div id="barin"></div></div>
+<div class="card">
+<p class="catname" id="catname"></p>
+<div class="q" id="q" aria-live="polite"></div>
+<label for="ans" class="catname">Deine Antwort</label>
+<input id="ans" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false">
+<div class="hlp" id="hlp"><button type="button" data-t="−">− Minus</button><button type="button" data-t="/">/ Bruchstrich</button></div>
+<p class="err" id="err" role="alert"></p>
+<div class="fb" id="fb" role="status" hidden></div>
+<button class="go" id="go" type="button">Prüfen</button>
+</div>
+</section>
+
+<section id="end" hidden>
+<div class="card">
+<p class="catname" id="endcat"></p>
+<div class="score" id="score"></div>
+<p id="msg"></p>
+<div id="wrong"></div>
+<div class="two"><button class="go" id="again" type="button">Noch eine Runde</button><button class="go sec" id="other" type="button">Andere Kategorie</button></div>
+</div>
+</section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[R(0,a.length-1)];
+const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a);
+const lcm=(a,b)=>a/gcd(a,b)*b;
+const rd=(n,d)=>{if(d<0){n=-n;d=-d}const g=gcd(n,d)||1;return{n:n/g,d:d/g}};
+const F=(n,d)=>'<span class="fr"><span>'+n+'</span><span>'+d+'</span></span>';
+const tx=o=>(o.n<0?'−':'')+(o.d==1?Math.abs(o.n):F(Math.abs(o.n),o.d));
+const P=o=>o.n<0?'('+tx(o)+')':tx(o);
+const ts=o=>(o.n<0?'−':'')+Math.abs(o.n)+(o.d==1?'':'/'+o.d);
+const sh=o=>{let s=ts(o);if(o.d>1&&Math.abs(o.n)>o.d){const w=Math.trunc(Math.abs(o.n)/o.d),r=Math.abs(o.n)-w*o.d;s+=' (= '+(o.n<0?'−':'')+w+' '+r+'/'+o.d+')'}return s};
+const pf=ds=>{const d=pick(ds);return{n:R(1,d-1),d}};
+const I=(a,b)=>({n:R(a,b),d:1});
+const ng=o=>({n:-o.n,d:o.d});
+const mk=(q,a,ex)=>({q:q+' = ?',a,ex});
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const T=(n,d)=>tx({n,d});
+function gK(){const t=R(1,4);
+if(t<=2){const k=R(2,9),q=R(2,9);let p;do{p=R(1,t==1?q-1:2*q+1)}while(gcd(p,q)!==1||p==q);const sg=Math.random()<.25?-1:1;const o={n:sg*p*k,d:q*k},res={n:sg*p,d:q};return mk(tx(o),res,'Teile Zähler und Nenner durch '+k+' (größter gemeinsamer Teiler): '+tx(res))}
+const k=R(2,9),d=R(2,9),n=R(1,d-1),nn=n*k,dd=d*k;
+if(t==3)return{q:T(n,d)+' = '+F('?',dd),a:{n:nn,d:1},ex:'Der Nenner wurde mal '+k+' genommen, also auch den Zähler: '+n+' · '+k+' = '+nn};
+return{q:T(n,d)+' = '+F(nn,'?'),a:{n:dd,d:1},ex:'Der Zähler wurde mal '+k+' genommen, also auch den Nenner: '+d+' · '+k+' = '+dd}}
+function gAS(s){const t=R(1,5);let a,b;
+if(t==1){const d=pick([3,4,5,6,7,8,9,10,12]);a={n:R(1,d-1),d};b={n:R(1,d-1),d}}
+else if(t==2||t==5){const p=pick([[2,3],[2,4],[3,6],[4,6],[2,5],[3,4],[5,10],[4,8],[3,5],[6,12],[4,12],[3,9],[5,6],[2,7]]);a={n:R(1,p[0]-1),d:p[0]};b={n:R(1,p[1]-1),d:p[1]};if(t==5)a=ng(a)}
+else if(t==3){a=I(2,6);b=pf([3,4,5,6,7,8]);if(Math.random()<.5){const x=a;a=b;b=x}}
+else{const d=pick([4,5,6,8]);a=ng(pf([d]));b=pf([2,3,4,5,6,8].filter(x=>x!=d))}
+const L=lcm(a.d,b.d),na=a.n*L/a.d,nb=b.n*L/b.d,nr=na+s*nb,res=rd(nr,L),raw={n:nr,d:L},o=s>0?' + ':' − ';
+let ex=(a.d==b.d?'Gleiche Nenner: nur die Zähler rechnen. ':'Hauptnenner '+L+': ')+tx({n:na,d:L})+o+P({n:nb,d:L})+' = '+tx(raw);
+if(res.n!==raw.n||res.d!==raw.d)ex+=' = '+tx(res);
+return mk(tx(a)+o+P(b),res,ex)}
+function gMul(){const t=R(1,3);let a,b;
+if(t==1){a=I(2,9);b=pf([3,4,5,6,7,8,9]);if(Math.random()<.5){const x=a;a=b;b=x}}else{a=pf([3,4,5,6,8,9]);b=pf([3,4,5,6,8,9,10])}
+const sa=Math.random()<.4,sb=Math.random()<.3;if(sa)a=ng(a);if(sb)b=ng(b);
+const raw={n:a.n*b.n,d:a.d*b.d},res=rd(raw.n,raw.d);
+let ex='Zähler mal Zähler, Nenner mal Nenner: '+tx(raw);if(res.n!==raw.n||res.d!==raw.d)ex+=' = '+tx(res);
+ex+=sa!==sb?'. Verschiedene Vorzeichen ergeben Minus.':sa?'. Minus mal Minus ergibt Plus.':'';
+return mk(tx(a)+' · '+P(b),res,ex)}
+function gDiv(){const t=R(1,3);let a,b;
+if(t==1){a=pf([3,4,5,6,7,8,9]);b=I(2,9)}else if(t==2){a=I(2,9);b=pf([3,4,5,6,7,8])}else{a=pf([3,4,5,6,8,9]);b=pf([3,4,5,6,8,9])}
+if(Math.random()<.35)a=ng(a);
+const k={n:b.d,d:b.n},raw={n:a.n*k.n,d:a.d*k.d},res=rd(raw.n,raw.d);
+let ex='Durch einen Bruch teilen heißt: mit dem Kehrwert malnehmen. Kehrwert von '+tx(b)+' ist '+tx(k)+': '+tx(a)+' · '+tx(k)+' = '+tx(raw);
+if(res.n!==raw.n||res.d!==raw.d)ex+=' = '+tx(res);
+return mk(tx(a)+' : '+P(b),res,ex)}
+const C=[
+{id:'kuerz',name:'Kürzen und Erweitern',sub:'12/18 = ? und 3/4 = ?/20',gen:gK,learn:'<p><b>Kürzen</b> heißt: Zähler und Nenner durch dieselbe Zahl teilen. <b>Erweitern</b> heißt: beide mit derselben Zahl malnehmen. Der Wert des Bruchs bleibt dabei gleich.</p><div class="ex">'+T(12,18)+' = '+F('12 : 6','18 : 6')+' = '+T(2,3)+' (gekürzt)<br>'+T(3,4)+' = '+F('3 · 5','4 · 5')+' = '+T(15,20)+' (erweitert)</div><p>Tipp: Teile durch den größten gemeinsamen Teiler, dann ist der Bruch sofort vollständig gekürzt. Bei den Aufgaben mit ? suchst du die fehlende Zahl.</p>'},
+{id:'add',name:'Addieren',sub:'auch mit ganzen Zahlen',gen:()=>gAS(1),learn:'<p>Bei <b>gleichen Nennern</b> bleibt der Nenner, die Zähler werden addiert. Bei <b>verschiedenen Nennern</b> erweiterst du zuerst auf den Hauptnenner. Eine <b>ganze Zahl</b> schreibst du als Bruch mit dem Nenner 1 (oder gleich passend erweitert). Zum Schluss kürzen.</p><div class="ex">'+T(2,7)+' + '+T(3,7)+' = '+T(5,7)+'<br>'+T(1,2)+' + '+T(1,3)+' = '+T(3,6)+' + '+T(2,6)+' = '+T(5,6)+'<br>2 + '+T(3,5)+' = '+T(10,5)+' + '+T(3,5)+' = '+T(13,5)+'<br>'+T(-1,4)+' + '+T(3,4)+' = '+T(2,4)+' = '+T(1,2)+'</div>'},
+{id:'sub',name:'Subtrahieren',sub:'auch mit ganzen Zahlen',gen:()=>gAS(-1),learn:'<p>Subtrahieren geht wie Addieren: erst gleichnamig machen, dann nur die Zähler rechnen. Das Ergebnis kann <b>negativ</b> werden. Das Minus schreibst du vor den Bruch.</p><div class="ex">'+T(3,4)+' − '+T(1,4)+' = '+T(2,4)+' = '+T(1,2)+'<br>'+T(1,4)+' − '+T(3,4)+' = '+T(-2,4)+' = '+T(-1,2)+'<br>3 − '+T(2,5)+' = '+T(15,5)+' − '+T(2,5)+' = '+T(13,5)+'<br>'+T(1,2)+' − '+T(1,3)+' = '+T(3,6)+' − '+T(2,6)+' = '+T(1,6)+'</div>'},
+{id:'mul',name:'Multiplizieren',sub:'4 · 3/7 und −4 · 3/7',gen:gMul,learn:'<p>Beim Multiplizieren rechnest du <b>Zähler mal Zähler</b> und <b>Nenner mal Nenner</b>. Eine ganze Zahl ist ein Bruch mit Nenner 1. Du kannst vorher kürzen. Bei den Vorzeichen gilt: gleiche Vorzeichen ergeben Plus, verschiedene Minus.</p><div class="ex">4 · '+T(3,7)+' = '+F('4 · 3','7')+' = '+T(12,7)+'<br>−4 · '+T(3,7)+' = '+T(-12,7)+'<br>'+T(2,3)+' · '+T(3,4)+' = '+T(6,12)+' = '+T(1,2)+'</div>'},
+{id:'div',name:'Dividieren',sub:'3/7 : 4 und 4 : 3/7',gen:gDiv,learn:'<p>Durch einen Bruch teilen heißt: <b>mit dem Kehrwert malnehmen</b>. Der Kehrwert entsteht, wenn du Zähler und Nenner vertauschst. Durch eine ganze Zahl zu teilen heißt, mit ihrem Kehrwert (1 durch die Zahl) zu multiplizieren.</p><div class="ex">'+T(3,7)+' : 4 = '+T(3,7)+' · '+T(1,4)+' = '+T(3,28)+'<br>4 : '+T(3,7)+' = 4 · '+T(7,3)+' = '+T(28,3)+'<br>'+T(2,3)+' : '+T(4,5)+' = '+T(2,3)+' · '+T(5,4)+' = '+T(10,12)+' = '+T(5,6)+'</div>'},
+{id:'mix',name:'Alles gemischt',sub:'alle Rechenarten durcheinander',gen:()=>pick([gK,()=>gAS(1),()=>gAS(-1),gMul,gDiv])(),learn:'<p>Hier kommen alle Aufgabenarten durcheinander. Die Regeln im Überblick:</p><ul><li><b>Kürzen/Erweitern:</b> Zähler und Nenner mit derselben Zahl teilen oder malnehmen.</li><li><b>Addieren/Subtrahieren:</b> gleichnamig machen, dann nur die Zähler rechnen.</li><li><b>Multiplizieren:</b> Zähler mal Zähler, Nenner mal Nenner.</li><li><b>Dividieren:</b> mit dem Kehrwert malnehmen.</li><li>Ganze Zahlen sind Brüche mit Nenner 1. Immer vollständig kürzen.</li></ul>'}
+];
+let cat,qs,i,score,wrong,checked,inRound=false;
+function show(id){['home','learn','play','end'].forEach(x=>$('#'+x).hidden=x!==id);window.scrollTo(0,0)}
+function best(){try{return JSON.parse(localStorage.getItem('bruch-best')||'{}')}catch(e){return{}}}
+function saveBest(id,s){try{const b=best();if(!(b[id]>=s)){b[id]=s;localStorage.setItem('bruch-best',JSON.stringify(b))}}catch(e){}}
+function home(){inRound=false;const b=best();$('#cats').innerHTML=C.map(c=>'<button class="cat" type="button" data-id="'+c.id+'"><b>'+c.name+'</b><span>'+c.sub+'</span><span class="best">'+(b[c.id]!=null?'Bestes Ergebnis: '+b[c.id]+' von 10':'Noch nicht geübt')+'</span></button>').join('');show('home')}
+function learn(id){if(id)cat=C.find(c=>c.id===id);$('#lt').textContent=cat.name;$('#lb').innerHTML=cat.learn;$('#start').textContent=inRound?'Zurück zur Aufgabe':'Aufgaben starten';show('learn')}
+function parseA(s){s=s.trim().replace(/−/g,'-');let m;
+if(m=/^(-?)(\d+)\s+(\d+)\/(\d+)$/.exec(s)){const d=+m[4];if(!d)return null;const t=+m[2]*d+ +m[3];return{n:m[1]?-t:t,d}}
+s=s.replace(/\s/g,'');
+if(m=/^(-?\d+)\/(-?\d+)$/.exec(s)){const d=+m[2];if(!d)return null;return{n:+m[1],d}}
+if(/^-?\d+$/.test(s))return{n:+s,d:1};return null}
+function start(){qs=[];const seen=new Set();let t=0;while(qs.length<10&&t++<300){const g=cat.gen();if(!seen.has(g.q)){seen.add(g.q);qs.push(g)}}i=0;score=0;wrong=[];inRound=true;show('play');render()}
+function render(){checked=false;$('#catname').textContent=cat.name;$('#prog').textContent='Aufgabe '+(i+1)+' von 10';$('#barin').style.width=(i/10*100)+'%';$('#q').innerHTML=qs[i].q;const a=$('#ans');a.value='';a.disabled=false;$('#err').textContent='';$('#fb').hidden=true;$('#go').textContent='Prüfen';a.focus()}
+function check(){const g=qs[i],a=$('#ans'),u=parseA(a.value);
+if(!u){$('#err').textContent='Gib einen Bruch (z. B. 3/4 oder −5/8) oder eine ganze Zahl ein.';return}
+const eq=u.n*g.a.d===g.a.n*u.d,red=u.d>0&&gcd(u.n,u.d)===1,ok=eq&&red,right=sh(g.a),fb=$('#fb');
+fb.hidden=false;fb.className='fb '+(ok?'ok':'bad');
+if(ok){score++;fb.innerHTML='Richtig! '+g.ex}else{fb.innerHTML=(eq?'Der Wert stimmt, aber der Bruch ist noch nicht vollständig gekürzt. Richtig ist ':'Nicht ganz. Richtig ist ')+right+'. '+g.ex;wrong.push({q:g.q,given:a.value.trim(),right,ex:g.ex})}
+a.disabled=true;checked=true;$('#go').textContent=i==9?'Ergebnis ansehen':'Weiter'}
+function next(){if(i==9){finish();return}i++;render()}
+function finish(){inRound=false;saveBest(cat.id,score);$('#endcat').textContent=cat.name;$('#score').textContent=score+' von 10';$('#msg').textContent=score==10?'Perfekt, alles richtig!':score>=8?'Sehr gut, fast alles sitzt.':score>=5?'Gut, an ein paar Stellen lohnt sich noch Übung.':'Lies dir die Erklärung noch einmal durch und versuche es erneut.';$('#wrong').innerHTML=wrong.length?'<p><b>Zum Nachschauen:</b></p><ul>'+wrong.map(w=>'<li>'+w.q.replace(/ = \?$/,'')+' = '+esc(w.right)+' (deine Antwort: '+esc(w.given||'–')+')<br><small>'+w.ex+'</small></li>').join('')+'</ul>':'';show('end')}
+$('#cats').addEventListener('click',e=>{const b=e.target.closest('.cat');if(b){inRound=false;learn(b.dataset.id)}});
+$('#start').addEventListener('click',()=>inRound?show('play'):start());
+$('#lback').addEventListener('click',()=>inRound?show('play'):home());
+$('#expl').addEventListener('click',()=>learn());
+$('#go').addEventListener('click',()=>checked?next():check());
+$('#ans').addEventListener('input',()=>$('#err').textContent='');
+$('#ans').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#go').click()}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&checked&&e.target.id!=='go'&&!$('#play').hidden)$('#go').click()});
+$('#hlp').addEventListener('click',e=>{const b=e.target.closest('button'),a=$('#ans');if(!b||a.disabled)return;const s=a.selectionStart==null?a.value.length:a.selectionStart,t=a.selectionEnd==null?s:a.selectionEnd;a.value=a.value.slice(0,s)+b.dataset.t+a.value.slice(t);a.focus();const p=s+b.dataset.t.length;a.setSelectionRange(p,p);$('#err').textContent=''});
+$('#back').addEventListener('click',home);
+$('#again').addEventListener('click',start);
+$('#other').addEventListener('click',home);
+home();
+</script>
+</body>
+</html>
