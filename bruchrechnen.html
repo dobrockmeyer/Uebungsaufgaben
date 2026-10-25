@@ -31,23 +31,38 @@ h2{font-size:1.3rem;margin:0 0 8px}
 .bar div{height:100%;background:var(--accent);width:0;transition:width .25s}
 .card{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:20px 16px}
 .catname{color:var(--muted);font-size:.95rem;margin:0 0 6px}
-.q{font-size:2.2rem;line-height:1.5;text-align:center;margin:14px 0 18px;min-height:3.4rem}
+.ins{font-weight:700;font-size:1.1rem;margin:0 0 4px}
+.q{font-size:2.2rem;line-height:1.5;text-align:center;margin:10px 0 14px}
 .fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.7em;line-height:1.15;margin:0 3px}
 .fr span:first-child{border-bottom:2px solid currentColor;padding:0 4px}
 .ex{background:var(--paper);border:2px solid var(--line);border-radius:8px;padding:10px 14px;margin:12px 0;font-size:1.2rem;line-height:2.2}
-input{width:100%;font:inherit;font-size:1.6rem;text-align:center;padding:10px;border:2px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
-input:disabled{opacity:.8}
-.hlp{display:flex;gap:8px;justify-content:center;margin-top:10px}
+.step{border:2px dashed var(--line);border-radius:10px;padding:8px 10px;margin-top:10px}
+.step.final{border-style:solid;border-color:var(--accent)}
+.step.ok{border-color:var(--ok);background:var(--okbg)}
+.step.bad{border-color:var(--bad);background:var(--badbg)}
+.slab{margin:0 0 6px;font-size:.95rem;color:var(--muted)}
+.final .slab{color:var(--ink);font-weight:700}
+.slab small{font-weight:400}
+.srow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;font-size:1.5rem}
+.fin{display:inline-flex;flex-direction:column;align-items:center;gap:4px}
+.fin .fl{display:block;width:100%;height:3px;background:var(--ink);border-radius:2px}
+.srow input{width:76px;font:inherit;font-size:1.3rem;text-align:center;padding:4px 2px;border:2px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink)}
+.srow input.int{width:96px}
+.srow input:disabled{opacity:.85}
+.shint{margin:6px 0 0;font-size:.95rem}
+.step.ok .shint{color:var(--ok)}
+.step.bad .shint{color:var(--bad)}
+.hlp{display:flex;gap:8px;justify-content:center;margin-top:12px}
 .hlp button{font:inherit;font-size:1.1rem;padding:6px 18px;border:2px solid var(--accent);border-radius:8px;background:transparent;color:var(--accent);cursor:pointer}
 .err{color:var(--bad);font-size:.95rem;min-height:1.4rem;margin:6px 0 0}
 .go{display:block;width:100%;margin-top:10px;font:inherit;font-weight:700;font-size:1.1rem;padding:12px;border:0;border-radius:8px;background:var(--accent);color:var(--accent-ink);cursor:pointer}
 .sec{background:transparent;color:var(--accent);border:2px solid var(--accent)}
-.fb{margin-top:14px;padding:10px 12px;border-radius:8px;font-size:1rem}
+.fb{margin-top:14px;padding:10px 12px;border-radius:8px;font-size:1rem;line-height:1.9}
 .fb.ok{background:var(--okbg);color:var(--ok)}
 .fb.bad{background:var(--badbg);color:var(--bad)}
 .score{font-size:2.4rem;font-weight:700;margin:4px 0}
 ul{padding-left:20px}
-li{margin:8px 0}
+li{margin:10px 0;line-height:1.9}
 .two{display:grid;gap:10px;margin-top:16px}
 @media(min-width:520px){.two{grid-template-columns:1fr 1fr}}
 </style>
@@ -57,7 +72,7 @@ li{margin:8px 0}
 <section id="home">
 <p><a class="link" href="index.html">Alle Kopfübungen</a></p>
 <h1>Wiederholung: Rechnen mit Brüchen</h1>
-<p class="lead">Wähle eine Rechenart. Zuerst gibt es eine kurze Erklärung, dann 10 Aufgaben ohne Taschenrechner. Brüche gibst du als 3/4 ein, negative mit Minus davor (−3/4). Gib das Ergebnis immer gekürzt an.</p>
+<p class="lead">Wähle eine Rechenart. Zuerst gibt es eine kurze Erklärung, dann 10 Aufgaben ohne Taschenrechner. Zähler und Nenner trägst du in eigene Felder ein. Die gestrichelten Felder sind für deine Zwischenschritte. Sie sind freiwillig, werden aber auch kontrolliert.</p>
 <div id="cats" class="cats"></div>
 </section>
 
@@ -75,10 +90,10 @@ li{margin:8px 0}
 <div class="bar"><div id="barin"></div></div>
 <div class="card">
 <p class="catname" id="catname"></p>
+<p class="ins" id="ins"></p>
 <div class="q" id="q" aria-live="polite"></div>
-<label for="ans" class="catname">Deine Antwort</label>
-<input id="ans" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false">
-<div class="hlp" id="hlp"><button type="button" data-t="−">− Minus</button><button type="button" data-t="/">/ Bruchstrich</button></div>
+<div id="work"></div>
+<div class="hlp"><button type="button" id="minus">− Minus</button></div>
 <p class="err" id="err" role="alert"></p>
 <div class="fb" id="fb" role="status" hidden></div>
 <button class="go" id="go" type="button">Prüfen</button>
@@ -103,6 +118,7 @@ const pick=a=>a[R(0,a.length-1)];
 const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a);
 const lcm=(a,b)=>a/gcd(a,b)*b;
 const rd=(n,d)=>{if(d<0){n=-n;d=-d}const g=gcd(n,d)||1;return{n:n/g,d:d/g}};
+const eqv=(x,y)=>x.n*y.d===y.n*x.d;
 const F=(n,d)=>'<span class="fr"><span>'+n+'</span><span>'+d+'</span></span>';
 const tx=o=>(o.n<0?'−':'')+(o.d==1?Math.abs(o.n):F(Math.abs(o.n),o.d));
 const P=o=>o.n<0?'('+tx(o)+')':tx(o);
@@ -111,75 +127,88 @@ const sh=o=>{let s=ts(o);if(o.d>1&&Math.abs(o.n)>o.d){const w=Math.trunc(Math.ab
 const pf=ds=>{const d=pick(ds);return{n:R(1,d-1),d}};
 const I=(a,b)=>({n:R(a,b),d:1});
 const ng=o=>({n:-o.n,d:o.d});
-const mk=(q,a,ex)=>({q:q+' = ?',a,ex});
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const T=(n,d)=>tx({n,d});
+const mk=(q,a,ex,steps,ins)=>({ins:ins||'Berechne und kürze das Ergebnis vollständig.',q,a,kind:'frac',steps:steps||[],ex,flab:'Ergebnis, vollständig gekürzt'});
 function gK(){const t=R(1,4);
-if(t<=2){const k=R(2,9),q=R(2,9);let p;do{p=R(1,t==1?q-1:2*q+1)}while(gcd(p,q)!==1||p==q);const sg=Math.random()<.25?-1:1;const o={n:sg*p*k,d:q*k},res={n:sg*p,d:q};return mk(tx(o),res,'Teile Zähler und Nenner durch '+k+' (größter gemeinsamer Teiler): '+tx(res))}
+if(t<=2){const k=R(2,9),q=R(2,9);let p;do{p=R(1,t==1?q-1:2*q+1)}while(gcd(p,q)!==1||p==q);const sg=Math.random()<.25?-1:1;const o={n:sg*p*k,d:q*k},res={n:sg*p,d:q};
+return{ins:'Kürze den Bruch vollständig.',q:tx(o),a:res,kind:'frac',steps:[],flab:'Vollständig gekürzter Bruch',ex:'Teile Zähler und Nenner durch '+k+' (größter gemeinsamer Teiler): '+tx(res)}}
 const k=R(2,9),d=R(2,9),n=R(1,d-1),nn=n*k,dd=d*k;
-if(t==3)return{q:T(n,d)+' = '+F('?',dd),a:{n:nn,d:1},ex:'Der Nenner wurde mal '+k+' genommen, also auch den Zähler: '+n+' · '+k+' = '+nn};
-return{q:T(n,d)+' = '+F(nn,'?'),a:{n:dd,d:1},ex:'Der Zähler wurde mal '+k+' genommen, also auch den Nenner: '+d+' · '+k+' = '+dd}}
+if(t==3)return{ins:'Erweitere: Welche Zahl gehört in den Zähler?',q:T(n,d)+' = '+F('?',dd),a:{n:nn,d:1},kind:'int',steps:[],flab:'Fehlender Zähler',ex:'Der Nenner wurde mal '+k+' genommen, also auch den Zähler: '+n+' · '+k+' = '+nn};
+return{ins:'Erweitere: Welche Zahl gehört in den Nenner?',q:T(n,d)+' = '+F(nn,'?'),a:{n:dd,d:1},kind:'int',steps:[],flab:'Fehlender Nenner',ex:'Der Zähler wurde mal '+k+' genommen, also auch den Nenner: '+d+' · '+k+' = '+dd}}
 function gAS(s){const t=R(1,5);let a,b;
 if(t==1){const d=pick([3,4,5,6,7,8,9,10,12]);a={n:R(1,d-1),d};b={n:R(1,d-1),d}}
 else if(t==2||t==5){const p=pick([[2,3],[2,4],[3,6],[4,6],[2,5],[3,4],[5,10],[4,8],[3,5],[6,12],[4,12],[3,9],[5,6],[2,7]]);a={n:R(1,p[0]-1),d:p[0]};b={n:R(1,p[1]-1),d:p[1]};if(t==5)a=ng(a)}
 else if(t==3){a=I(2,6);b=pf([3,4,5,6,7,8]);if(Math.random()<.5){const x=a;a=b;b=x}}
 else{const d=pick([4,5,6,8]);a=ng(pf([d]));b=pf([2,3,4,5,6,8].filter(x=>x!=d))}
-const L=lcm(a.d,b.d),na=a.n*L/a.d,nb=b.n*L/b.d,nr=na+s*nb,res=rd(nr,L),raw={n:nr,d:L},o=s>0?' + ':' − ';
+const L=lcm(a.d,b.d),na=a.n*L/a.d,nb=b.n*L/b.d,nr=na+s*nb,res=rd(nr,L),raw={n:nr,d:L},o=s>0?' + ':' − ',os=s>0?'+':'−';
 let ex=(a.d==b.d?'Gleiche Nenner: nur die Zähler rechnen. ':'Hauptnenner '+L+': ')+tx({n:na,d:L})+o+P({n:nb,d:L})+' = '+tx(raw);
 if(res.n!==raw.n||res.d!==raw.d)ex+=' = '+tx(res);
-return mk(tx(a)+o+P(b),res,ex)}
+const steps=[
+{lab:'Schritt 1: auf den gleichen Nenner bringen',k:2,op:os,check:f=>f[0].d===f[1].d&&eqv(f[0],a)&&eqv(f[1],b),hint:'Beide Brüche brauchen denselben Nenner und müssen ihren Wert behalten. Ganze Zahlen kannst du als Bruch schreiben, z. B. 2 = 10/5.'},
+{lab:'Schritt 2: Zähler '+(s>0?'addieren':'subtrahieren'),k:1,check:f=>eqv(f[0],raw),hint:'Rechne nur mit den Zählern, der Nenner bleibt gleich.'}];
+return mk(tx(a)+o+P(b),res,ex,steps)}
 function gMul(){const t=R(1,3);let a,b;
 if(t==1){a=I(2,9);b=pf([3,4,5,6,7,8,9]);if(Math.random()<.5){const x=a;a=b;b=x}}else{a=pf([3,4,5,6,8,9]);b=pf([3,4,5,6,8,9,10])}
 const sa=Math.random()<.4,sb=Math.random()<.3;if(sa)a=ng(a);if(sb)b=ng(b);
 const raw={n:a.n*b.n,d:a.d*b.d},res=rd(raw.n,raw.d);
 let ex='Zähler mal Zähler, Nenner mal Nenner: '+tx(raw);if(res.n!==raw.n||res.d!==raw.d)ex+=' = '+tx(res);
 ex+=sa!==sb?'. Verschiedene Vorzeichen ergeben Minus.':sa?'. Minus mal Minus ergibt Plus.':'';
-return mk(tx(a)+' · '+P(b),res,ex)}
+const steps=[{lab:'Schritt 1: Zähler mal Zähler, Nenner mal Nenner',k:1,check:f=>eqv(f[0],raw),hint:'Multipliziere die Zähler miteinander und die Nenner miteinander. Achte auf das Vorzeichen.'}];
+return mk(tx(a)+' · '+P(b),res,ex,steps)}
 function gDiv(){const t=R(1,3);let a,b;
 if(t==1){a=pf([3,4,5,6,7,8,9]);b=I(2,9)}else if(t==2){a=I(2,9);b=pf([3,4,5,6,7,8])}else{a=pf([3,4,5,6,8,9]);b=pf([3,4,5,6,8,9])}
 if(Math.random()<.35)a=ng(a);
 const k={n:b.d,d:b.n},raw={n:a.n*k.n,d:a.d*k.d},res=rd(raw.n,raw.d);
 let ex='Durch einen Bruch teilen heißt: mit dem Kehrwert malnehmen. Kehrwert von '+tx(b)+' ist '+tx(k)+': '+tx(a)+' · '+tx(k)+' = '+tx(raw);
 if(res.n!==raw.n||res.d!==raw.d)ex+=' = '+tx(res);
-return mk(tx(a)+' : '+P(b),res,ex)}
+const steps=[
+{lab:'Schritt 1: mit dem Kehrwert malnehmen',k:2,op:'·',check:f=>eqv(f[0],a)&&eqv(f[1],k),hint:'Der erste Bruch bleibt. Beim zweiten vertauschst du Zähler und Nenner (Kehrwert von 4 ist 1/4).'},
+{lab:'Schritt 2: ausmultiplizieren',k:1,check:f=>eqv(f[0],raw),hint:'Zähler mal Zähler, Nenner mal Nenner.'}];
+return mk(tx(a)+' : '+P(b),res,ex,steps)}
 const C=[
-{id:'kuerz',name:'Kürzen und Erweitern',sub:'12/18 = ? und 3/4 = ?/20',gen:gK,learn:'<p><b>Kürzen</b> heißt: Zähler und Nenner durch dieselbe Zahl teilen. <b>Erweitern</b> heißt: beide mit derselben Zahl malnehmen. Der Wert des Bruchs bleibt dabei gleich.</p><div class="ex">'+T(12,18)+' = '+F('12 : 6','18 : 6')+' = '+T(2,3)+' (gekürzt)<br>'+T(3,4)+' = '+F('3 · 5','4 · 5')+' = '+T(15,20)+' (erweitert)</div><p>Tipp: Teile durch den größten gemeinsamen Teiler, dann ist der Bruch sofort vollständig gekürzt. Bei den Aufgaben mit ? suchst du die fehlende Zahl.</p>'},
+{id:'kuerz',name:'Kürzen und Erweitern',sub:'12/18 kürzen, 3/4 = ?/20',gen:gK,learn:'<p><b>Kürzen</b> heißt: Zähler und Nenner durch dieselbe Zahl teilen. <b>Erweitern</b> heißt: beide mit derselben Zahl malnehmen. Der Wert des Bruchs bleibt dabei gleich.</p><div class="ex">'+T(12,18)+' = '+F('12 : 6','18 : 6')+' = '+T(2,3)+' (gekürzt)<br>'+T(3,4)+' = '+F('3 · 5','4 · 5')+' = '+T(15,20)+' (erweitert)</div><p>Tipp: Teile durch den größten gemeinsamen Teiler, dann ist der Bruch sofort vollständig gekürzt. Bei den Aufgaben mit ? suchst du die fehlende Zahl.</p>'},
 {id:'add',name:'Addieren',sub:'auch mit ganzen Zahlen',gen:()=>gAS(1),learn:'<p>Bei <b>gleichen Nennern</b> bleibt der Nenner, die Zähler werden addiert. Bei <b>verschiedenen Nennern</b> erweiterst du zuerst auf den Hauptnenner. Eine <b>ganze Zahl</b> schreibst du als Bruch mit dem Nenner 1 (oder gleich passend erweitert). Zum Schluss kürzen.</p><div class="ex">'+T(2,7)+' + '+T(3,7)+' = '+T(5,7)+'<br>'+T(1,2)+' + '+T(1,3)+' = '+T(3,6)+' + '+T(2,6)+' = '+T(5,6)+'<br>2 + '+T(3,5)+' = '+T(10,5)+' + '+T(3,5)+' = '+T(13,5)+'<br>'+T(-1,4)+' + '+T(3,4)+' = '+T(2,4)+' = '+T(1,2)+'</div>'},
-{id:'sub',name:'Subtrahieren',sub:'auch mit ganzen Zahlen',gen:()=>gAS(-1),learn:'<p>Subtrahieren geht wie Addieren: erst gleichnamig machen, dann nur die Zähler rechnen. Das Ergebnis kann <b>negativ</b> werden. Das Minus schreibst du vor den Bruch.</p><div class="ex">'+T(3,4)+' − '+T(1,4)+' = '+T(2,4)+' = '+T(1,2)+'<br>'+T(1,4)+' − '+T(3,4)+' = '+T(-2,4)+' = '+T(-1,2)+'<br>3 − '+T(2,5)+' = '+T(15,5)+' − '+T(2,5)+' = '+T(13,5)+'<br>'+T(1,2)+' − '+T(1,3)+' = '+T(3,6)+' − '+T(2,6)+' = '+T(1,6)+'</div>'},
+{id:'sub',name:'Subtrahieren',sub:'auch mit ganzen Zahlen',gen:()=>gAS(-1),learn:'<p>Subtrahieren geht wie Addieren: erst gleichnamig machen, dann nur die Zähler rechnen. Das Ergebnis kann <b>negativ</b> werden. Das Minus schreibst du in den Zähler.</p><div class="ex">'+T(3,4)+' − '+T(1,4)+' = '+T(2,4)+' = '+T(1,2)+'<br>'+T(1,4)+' − '+T(3,4)+' = '+T(-2,4)+' = '+T(-1,2)+'<br>3 − '+T(2,5)+' = '+T(15,5)+' − '+T(2,5)+' = '+T(13,5)+'<br>'+T(1,2)+' − '+T(1,3)+' = '+T(3,6)+' − '+T(2,6)+' = '+T(1,6)+'</div>'},
 {id:'mul',name:'Multiplizieren',sub:'4 · 3/7 und −4 · 3/7',gen:gMul,learn:'<p>Beim Multiplizieren rechnest du <b>Zähler mal Zähler</b> und <b>Nenner mal Nenner</b>. Eine ganze Zahl ist ein Bruch mit Nenner 1. Du kannst vorher kürzen. Bei den Vorzeichen gilt: gleiche Vorzeichen ergeben Plus, verschiedene Minus.</p><div class="ex">4 · '+T(3,7)+' = '+F('4 · 3','7')+' = '+T(12,7)+'<br>−4 · '+T(3,7)+' = '+T(-12,7)+'<br>'+T(2,3)+' · '+T(3,4)+' = '+T(6,12)+' = '+T(1,2)+'</div>'},
 {id:'div',name:'Dividieren',sub:'3/7 : 4 und 4 : 3/7',gen:gDiv,learn:'<p>Durch einen Bruch teilen heißt: <b>mit dem Kehrwert malnehmen</b>. Der Kehrwert entsteht, wenn du Zähler und Nenner vertauschst. Durch eine ganze Zahl zu teilen heißt, mit ihrem Kehrwert (1 durch die Zahl) zu multiplizieren.</p><div class="ex">'+T(3,7)+' : 4 = '+T(3,7)+' · '+T(1,4)+' = '+T(3,28)+'<br>4 : '+T(3,7)+' = 4 · '+T(7,3)+' = '+T(28,3)+'<br>'+T(2,3)+' : '+T(4,5)+' = '+T(2,3)+' · '+T(5,4)+' = '+T(10,12)+' = '+T(5,6)+'</div>'},
 {id:'mix',name:'Alles gemischt',sub:'alle Rechenarten durcheinander',gen:()=>pick([gK,()=>gAS(1),()=>gAS(-1),gMul,gDiv])(),learn:'<p>Hier kommen alle Aufgabenarten durcheinander. Die Regeln im Überblick:</p><ul><li><b>Kürzen/Erweitern:</b> Zähler und Nenner mit derselben Zahl teilen oder malnehmen.</li><li><b>Addieren/Subtrahieren:</b> gleichnamig machen, dann nur die Zähler rechnen.</li><li><b>Multiplizieren:</b> Zähler mal Zähler, Nenner mal Nenner.</li><li><b>Dividieren:</b> mit dem Kehrwert malnehmen.</li><li>Ganze Zahlen sind Brüche mit Nenner 1. Immer vollständig kürzen.</li></ul>'}
 ];
-let cat,qs,i,score,wrong,checked,inRound=false;
+let cat,qs,i,score,wrong,checked,inRound=false,lastIn=null;
 function show(id){['home','learn','play','end'].forEach(x=>$('#'+x).hidden=x!==id);window.scrollTo(0,0)}
 function best(){try{return JSON.parse(localStorage.getItem('bruch-best')||'{}')}catch(e){return{}}}
 function saveBest(id,s){try{const b=best();if(!(b[id]>=s)){b[id]=s;localStorage.setItem('bruch-best',JSON.stringify(b))}}catch(e){}}
 function home(){inRound=false;const b=best();$('#cats').innerHTML=C.map(c=>'<button class="cat" type="button" data-id="'+c.id+'"><b>'+c.name+'</b><span>'+c.sub+'</span><span class="best">'+(b[c.id]!=null?'Bestes Ergebnis: '+b[c.id]+' von 10':'Noch nicht geübt')+'</span></button>').join('');show('home')}
 function learn(id){if(id)cat=C.find(c=>c.id===id);$('#lt').textContent=cat.name;$('#lb').innerHTML=cat.learn;$('#start').textContent=inRound?'Zurück zur Aufgabe':'Aufgaben starten';show('learn')}
-function parseA(s){s=s.trim().replace(/−/g,'-');let m;
-if(m=/^(-?)(\d+)\s+(\d+)\/(\d+)$/.exec(s)){const d=+m[4];if(!d)return null;const t=+m[2]*d+ +m[3];return{n:m[1]?-t:t,d}}
-s=s.replace(/\s/g,'');
-if(m=/^(-?\d+)\/(-?\d+)$/.exec(s)){const d=+m[2];if(!d)return null;return{n:+m[1],d}}
-if(/^-?\d+$/.test(s))return{n:+s,d:1};return null}
+const FIN='<span class="fin"><input class="z" type="text" inputmode="numeric" autocomplete="off" aria-label="Zähler"><span class="fl"></span><input class="n" type="text" inputmode="numeric" autocomplete="off" aria-label="Nenner"></span>';
+function pInt(s){s=s.trim().replace(/[−–]/g,'-').replace(/\s/g,'');return /^-?\d+$/.test(s)?+s:null}
+function readFin(el){const z=el.querySelector('.z').value.trim(),n=el.querySelector('.n').value.trim();if(!z&&!n)return'empty';const zz=pInt(z);if(zz===null)return null;let nn=n?pInt(n):1;if(nn===null||nn===0)return null;if(nn<0){nn=-nn;return{n:-zz,d:nn}}return{n:zz,d:nn}}
 function start(){qs=[];const seen=new Set();let t=0;while(qs.length<10&&t++<300){const g=cat.gen();if(!seen.has(g.q)){seen.add(g.q);qs.push(g)}}i=0;score=0;wrong=[];inRound=true;show('play');render()}
-function render(){checked=false;$('#catname').textContent=cat.name;$('#prog').textContent='Aufgabe '+(i+1)+' von 10';$('#barin').style.width=(i/10*100)+'%';$('#q').innerHTML=qs[i].q;const a=$('#ans');a.value='';a.disabled=false;$('#err').textContent='';$('#fb').hidden=true;$('#go').textContent='Prüfen';a.focus()}
-function check(){const g=qs[i],a=$('#ans'),u=parseA(a.value);
-if(!u){$('#err').textContent='Gib einen Bruch (z. B. 3/4 oder −5/8) oder eine ganze Zahl ein.';return}
-const eq=u.n*g.a.d===g.a.n*u.d,red=u.d>0&&gcd(u.n,u.d)===1,ok=eq&&red,right=sh(g.a),fb=$('#fb');
-fb.hidden=false;fb.className='fb '+(ok?'ok':'bad');
-if(ok){score++;fb.innerHTML='Richtig! '+g.ex}else{fb.innerHTML=(eq?'Der Wert stimmt, aber der Bruch ist noch nicht vollständig gekürzt. Richtig ist ':'Nicht ganz. Richtig ist ')+right+'. '+g.ex;wrong.push({q:g.q,given:a.value.trim(),right,ex:g.ex})}
-a.disabled=true;checked=true;$('#go').textContent=i==9?'Ergebnis ansehen':'Weiter'}
+function render(){checked=false;const g=qs[i];$('#catname').textContent=cat.name;$('#prog').textContent='Aufgabe '+(i+1)+' von 10';$('#barin').style.width=(i/10*100)+'%';$('#ins').textContent=g.ins;$('#q').innerHTML=g.q;
+let h=g.steps.map(s=>'<div class="step"><p class="slab">'+s.lab+' <small>(freiwillig)</small></p><div class="srow"><span>=</span>'+(s.k==2?FIN+'<span>'+s.op+'</span>'+FIN:FIN)+'</div><p class="shint"></p></div>').join('');
+h+='<div class="step final"><p class="slab">'+g.flab+'</p><div class="srow">'+(g.kind=='int'?'<span>? =</span><input class="int" type="text" inputmode="numeric" autocomplete="off" aria-label="'+g.flab+'">':(g.steps.length?'<span>=</span>':'<span>=</span>')+FIN)+'</div><p class="shint"></p></div>';
+$('#work').innerHTML=h;$('#err').textContent='';$('#fb').hidden=true;$('#go').textContent='Prüfen';lastIn=null;const f=$('#work input');if(f)f.focus()}
+function check(){const g=qs[i],fin=$('#work .final');let u;
+if(g.kind=='int'){const v=pInt(fin.querySelector('input').value);if(v===null){$('#err').textContent='Trage die fehlende Zahl ein.';return}u={n:v,d:1}}
+else{u=readFin(fin);if(u==='empty'||u===null){$('#err').textContent='Trage dein Ergebnis ein: Zähler oben, Nenner unten. Bei einer ganzen Zahl bleibt der Nenner leer.';return}}
+[...$('#work').querySelectorAll('.step:not(.final)')].forEach((el,si)=>{const s=g.steps[si],fs=[...el.querySelectorAll('.fin')].map(readFin);if(fs.every(x=>x==='empty'))return;const hi=el.querySelector('.shint');if(fs.some(x=>x==='empty'||x===null)){el.classList.add('bad');hi.textContent='Dieser Schritt ist unvollständig.';return}const okS=s.check(fs);el.classList.add(okS?'ok':'bad');hi.textContent=okS?'Schritt stimmt.':s.hint});
+const eq=eqv(u,g.a),red=u.d>0&&gcd(u.n,u.d)===1,ok=g.kind=='int'?u.n===g.a.n:eq&&red,right=g.kind=='int'?String(g.a.n):sh(g.a),fb=$('#fb');
+fin.classList.add(ok?'ok':'bad');fb.hidden=false;fb.className='fb '+(ok?'ok':'bad');
+if(ok){score++;fb.innerHTML='Richtig! '+g.ex}else{fb.innerHTML=(g.kind!='int'&&eq?'Der Wert stimmt, aber der Bruch ist noch nicht vollständig gekürzt. Richtig ist ':'Nicht ganz. Richtig ist ')+esc(right)+'. '+g.ex;wrong.push({q:g.q,given:g.kind=='int'?String(u.n):ts(u),right,ex:g.ex,int:g.kind=='int'})}
+$('#work').querySelectorAll('input').forEach(x=>x.disabled=true);checked=true;$('#go').textContent=i==9?'Ergebnis ansehen':'Weiter';$('#go').focus()}
 function next(){if(i==9){finish();return}i++;render()}
-function finish(){inRound=false;saveBest(cat.id,score);$('#endcat').textContent=cat.name;$('#score').textContent=score+' von 10';$('#msg').textContent=score==10?'Perfekt, alles richtig!':score>=8?'Sehr gut, fast alles sitzt.':score>=5?'Gut, an ein paar Stellen lohnt sich noch Übung.':'Lies dir die Erklärung noch einmal durch und versuche es erneut.';$('#wrong').innerHTML=wrong.length?'<p><b>Zum Nachschauen:</b></p><ul>'+wrong.map(w=>'<li>'+w.q.replace(/ = \?$/,'')+' = '+esc(w.right)+' (deine Antwort: '+esc(w.given||'–')+')<br><small>'+w.ex+'</small></li>').join('')+'</ul>':'';show('end')}
+function finish(){inRound=false;saveBest(cat.id,score);$('#endcat').textContent=cat.name;$('#score').textContent=score+' von 10';$('#msg').textContent=score==10?'Perfekt, alles richtig!':score>=8?'Sehr gut, fast alles sitzt.':score>=5?'Gut, an ein paar Stellen lohnt sich noch Übung.':'Lies dir die Erklärung noch einmal durch und versuche es erneut.';$('#wrong').innerHTML=wrong.length?'<p><b>Zum Nachschauen:</b></p><ul>'+wrong.map(w=>'<li>'+w.q+(w.int?', fehlende Zahl: ':' = ')+esc(w.right)+' (deine Antwort: '+esc(w.given)+')<br><small>'+w.ex+'</small></li>').join('')+'</ul>':'';show('end')}
 $('#cats').addEventListener('click',e=>{const b=e.target.closest('.cat');if(b){inRound=false;learn(b.dataset.id)}});
 $('#start').addEventListener('click',()=>inRound?show('play'):start());
 $('#lback').addEventListener('click',()=>inRound?show('play'):home());
 $('#expl').addEventListener('click',()=>learn());
 $('#go').addEventListener('click',()=>checked?next():check());
-$('#ans').addEventListener('input',()=>$('#err').textContent='');
-$('#ans').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#go').click()}});
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&checked&&e.target.id!=='go'&&!$('#play').hidden)$('#go').click()});
-$('#hlp').addEventListener('click',e=>{const b=e.target.closest('button'),a=$('#ans');if(!b||a.disabled)return;const s=a.selectionStart==null?a.value.length:a.selectionStart,t=a.selectionEnd==null?s:a.selectionEnd;a.value=a.value.slice(0,s)+b.dataset.t+a.value.slice(t);a.focus();const p=s+b.dataset.t.length;a.setSelectionRange(p,p);$('#err').textContent=''});
+$('#work').addEventListener('focusin',e=>{if(e.target.tagName==='INPUT')lastIn=e.target});
+$('#work').addEventListener('input',()=>$('#err').textContent='');
+$('#work').addEventListener('keydown',e=>{if(e.key!=='Enter'||e.target.tagName!=='INPUT')return;e.preventDefault();const all=[...$('#work').querySelectorAll('input')],k=all.indexOf(e.target);if(k<all.length-1)all[k+1].focus();else $('#go').click()});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&checked&&e.target.id!=='go'&&!$('#play').hidden){e.preventDefault();$('#go').click()}});
+$('#minus').addEventListener('mousedown',e=>e.preventDefault());
+$('#minus').addEventListener('click',()=>{const a=lastIn&&!lastIn.disabled?lastIn:$('#work input:not(:disabled)');if(!a)return;let v=a.value.trim();a.value=/^[−-]/.test(v)?v.replace(/^[−-]/,''):'−'+v;a.focus();$('#err').textContent=''});
 $('#back').addEventListener('click',home);
 $('#again').addEventListener('click',start);
 $('#other').addEventListener('click',home);
