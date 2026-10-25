@@ -179,22 +179,30 @@ function show(id){['home','learn','play','end'].forEach(x=>$('#'+x).hidden=x!==i
 function best(){try{return JSON.parse(localStorage.getItem('bruch-best')||'{}')}catch(e){return{}}}
 function saveBest(id,s){try{const b=best();if(!(b[id]>=s)){b[id]=s;localStorage.setItem('bruch-best',JSON.stringify(b))}}catch(e){}}
 function home(){inRound=false;const b=best();$('#cats').innerHTML=C.map(c=>'<button class="cat" type="button" data-id="'+c.id+'"><b>'+c.name+'</b><span>'+c.sub+'</span><span class="best">'+(b[c.id]!=null?'Bestes Ergebnis: '+b[c.id]+' von 10':'Noch nicht geübt')+'</span></button>').join('');show('home')}
-function learn(id){if(id)cat=C.find(c=>c.id===id);$('#lt').textContent=cat.name;$('#lb').innerHTML=cat.learn;$('#start').textContent=inRound?'Zurück zur Aufgabe':'Aufgaben starten';show('learn')}
+function learn(id){if(id)cat=C.find(c=>c.id===id);$('#lt').textContent=cat.name;$('#lb').innerHTML=cat.learn+MIXNOTE;$('#start').textContent=inRound?'Zurück zur Aufgabe':'Aufgaben starten';show('learn')}
 const FIN='<span class="fin"><input class="z" type="text" inputmode="numeric" autocomplete="off" aria-label="Zähler"><span class="fl"></span><input class="n" type="text" inputmode="numeric" autocomplete="off" aria-label="Nenner"></span>';
 function pInt(s){s=s.trim().replace(/[−–]/g,'-').replace(/\s/g,'');return /^-?\d+$/.test(s)?+s:null}
 function readFin(el){const z=el.querySelector('.z').value.trim(),n=el.querySelector('.n').value.trim();if(!z&&!n)return'empty';const zz=pInt(z);if(zz===null)return null;let nn=n?pInt(n):1;if(nn===null||nn===0)return null;if(nn<0){nn=-nn;return{n:-zz,d:nn}}return{n:zz,d:nn}}
+const isMix=g=>g.kind=='frac'&&g.a.d>1&&Math.abs(g.a.n)>g.a.d;
+const mixOf=a=>{const w=Math.trunc(Math.abs(a.n)/a.d);return{w:a.n<0?-w:w,r:Math.abs(a.n)-w*a.d,d:a.d}};
+const MIXNOTE='<p><b>Gemischte Zahlen:</b> Ist der Zähler größer als der Nenner, gibst du das Ergebnis zusätzlich als gemischte Zahl an. Dafür teilst du den Zähler durch den Nenner mit Rest.</p><div class="ex">'+T(13,5)+' = 2'+T(3,5)+' (denn 13 : 5 = 2 Rest 3)<br>'+T(-7,3)+' = −2'+T(1,3)+'</div>';
 function start(){qs=[];const seen=new Set();let t=0;while(qs.length<10&&t++<300){const g=cat.gen();if(!seen.has(g.q)){seen.add(g.q);qs.push(g)}}i=0;score=0;wrong=[];inRound=true;show('play');render()}
 function render(){checked=false;const g=qs[i];$('#catname').textContent=cat.name;$('#prog').textContent='Aufgabe '+(i+1)+' von 10';$('#barin').style.width=(i/10*100)+'%';$('#ins').textContent=g.ins;$('#q').innerHTML=g.q;
 let h=g.steps.map(s=>'<div class="step"><p class="slab">'+s.lab+' <small>(freiwillig)</small></p><div class="srow"><span>=</span>'+(s.k==2?FIN+'<span>'+s.op+'</span>'+FIN:FIN)+'</div><p class="shint"></p></div>').join('');
 h+='<div class="step final"><p class="slab">'+g.flab+'</p><div class="srow">'+(g.kind=='int'?'<span>? =</span><input class="int" type="text" inputmode="numeric" autocomplete="off" aria-label="'+g.flab+'">':(g.steps.length?'<span>=</span>':'<span>=</span>')+FIN)+'</div><p class="shint"></p></div>';
+if(isMix(g))h+='<div class="step final mix"><p class="slab">Als gemischte Zahl</p><div class="srow"><span>=</span><input class="int w" type="text" inputmode="numeric" autocomplete="off" aria-label="Ganze Zahl">'+FIN+'</div><p class="shint"></p></div>';
 $('#work').innerHTML=h;$('#err').textContent='';$('#fb').hidden=true;$('#go').textContent='Prüfen';lastIn=null;const f=$('#work input');if(f)f.focus()}
 function check(){const g=qs[i],fin=$('#work .final');let u;
 if(g.kind=='int'){const v=pInt(fin.querySelector('input').value);if(v===null){$('#err').textContent='Trage die fehlende Zahl ein.';return}u={n:v,d:1}}
 else{u=readFin(fin);if(u==='empty'||u===null){$('#err').textContent='Trage dein Ergebnis ein: Zähler oben, Nenner unten. Bei einer ganzen Zahl bleibt der Nenner leer.';return}}
+let mx=null,okM=true;const mel=$('#work .mix');
+if(mel){const w=pInt(mel.querySelector('.w').value),fr=readFin(mel.querySelector('.fin'));if(w===null||fr==='empty'||fr===null){$('#err').textContent='Gib das Ergebnis auch als gemischte Zahl an: ganze Zahl links, Bruch rechts. Ein Minus gehört zur ganzen Zahl.';return}
+const m=mixOf(g.a);mx=w+' '+ts(fr);okM=w===m.w&&fr.n===m.r&&fr.d===m.d;mel.classList.add(okM?'ok':'bad');mel.querySelector('.shint').textContent=okM?'':'Teile den Zähler durch den Nenner: Das Ergebnis ist die ganze Zahl, der Rest kommt in den Zähler. Der Nenner bleibt.'}
 [...$('#work').querySelectorAll('.step:not(.final)')].forEach((el,si)=>{const s=g.steps[si],fs=[...el.querySelectorAll('.fin')].map(readFin);if(fs.every(x=>x==='empty'))return;const hi=el.querySelector('.shint');if(fs.some(x=>x==='empty'||x===null)){el.classList.add('bad');hi.textContent='Dieser Schritt ist unvollständig.';return}const okS=s.check(fs);el.classList.add(okS?'ok':'bad');hi.textContent=okS?'Schritt stimmt.':s.hint});
-const eq=eqv(u,g.a),red=u.d>0&&gcd(u.n,u.d)===1,ok=g.kind=='int'?u.n===g.a.n:eq&&red,right=g.kind=='int'?String(g.a.n):sh(g.a),fb=$('#fb');
-fin.classList.add(ok?'ok':'bad');fb.hidden=false;fb.className='fb '+(ok?'ok':'bad');
-if(ok){score++;fb.innerHTML='Richtig! '+g.ex}else{fb.innerHTML=(g.kind!='int'&&eq?'Der Wert stimmt, aber der Bruch ist noch nicht vollständig gekürzt. Richtig ist ':'Nicht ganz. Richtig ist ')+esc(right)+'. '+g.ex;wrong.push({q:g.q,given:g.kind=='int'?String(u.n):ts(u),right,ex:g.ex,int:g.kind=='int'})}
+const eq=eqv(u,g.a),red=u.d>0&&gcd(u.n,u.d)===1,okF=g.kind=='int'?u.n===g.a.n:eq&&red,ok=okF&&okM,right=g.kind=='int'?String(g.a.n):sh(g.a),fb=$('#fb');
+fin.classList.add(okF?'ok':'bad');fb.hidden=false;fb.className='fb '+(ok?'ok':'bad');
+const given=(g.kind=='int'?String(u.n):ts(u))+(mx?' = '+mx:'');
+if(ok){score++;fb.innerHTML='Richtig! '+g.ex}else{fb.innerHTML=(okF?'Der Bruch stimmt, aber die gemischte Zahl nicht. Richtig ist ':g.kind!='int'&&eq?'Der Wert stimmt, aber der Bruch ist noch nicht vollständig gekürzt. Richtig ist ':'Nicht ganz. Richtig ist ')+esc(right)+'. '+g.ex;wrong.push({q:g.q,given,right,ex:g.ex,int:g.kind=='int'})}
 $('#work').querySelectorAll('input').forEach(x=>x.disabled=true);checked=true;$('#go').textContent=i==9?'Ergebnis ansehen':'Weiter';$('#go').focus()}
 function next(){if(i==9){finish();return}i++;render()}
 function finish(){inRound=false;saveBest(cat.id,score);$('#endcat').textContent=cat.name;$('#score').textContent=score+' von 10';$('#msg').textContent=score==10?'Perfekt, alles richtig!':score>=8?'Sehr gut, fast alles sitzt.':score>=5?'Gut, an ein paar Stellen lohnt sich noch Übung.':'Lies dir die Erklärung noch einmal durch und versuche es erneut.';$('#wrong').innerHTML=wrong.length?'<p><b>Zum Nachschauen:</b></p><ul>'+wrong.map(w=>'<li>'+w.q+(w.int?', fehlende Zahl: ':' = ')+esc(w.right)+' (deine Antwort: '+esc(w.given)+')<br><small>'+w.ex+'</small></li>').join('')+'</ul>':'';show('end')}
